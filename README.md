@@ -23,13 +23,22 @@ while True:
     pass
 ```
 
+## In the lib
+
+* mandelbrot()
+* mandelbrot_points
+* quasicrystal()
+
 ## More infos
 
 * Mandelbrot
   * [wikipedia](https://en.wikipedia.org/wiki/Mandelbrot_set)
   * [original code for pygamer board](https://lecluseo.scenari-community.org/CircuitPython/co/g_mandelbrot.html)
   
-* 
+* Quasicrystal
+  * [Quasicrystals as sums of waves in the plane](http://mainisusuallyafunction.blogspot.com/2011/10/quasicrystals-as-sums-of-waves-in-plane.html)
+  * [Wikipedia](https://en.wikipedia.org/wiki/Quasicrystal)
+  * [naive python implementation](https://code.activestate.com/recipes/579094-quasicrystal-pattern-generator/)
 
 
 ## 
