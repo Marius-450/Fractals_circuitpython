@@ -11,7 +11,7 @@ display.show(group)
 
 while True:
     start = time.monotonic()
-    group = fractals.quasicrystal(display.width, display.height, 128, group)
+    group = fractals.quasicrystal(display.width, display.height, 16, group)
     print(time.monotonic()-start, "secs to draw")
-    time.sleep(30)
-    pass
+    time.sleep(0.01)
+

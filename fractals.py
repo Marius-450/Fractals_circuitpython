@@ -3,6 +3,7 @@ import displayio
 import math
 import random
 import ulab
+import gc
 
 mandelbrot_points = (((-0.5, 0), 2.3),
                      ((-.7435669, .1314023), .0022878),
@@ -108,10 +109,6 @@ def mandelbrot(WIDTH, HEIGHT, N=256, group=None, CENTER=(-0.5, 0), DIAMX=2.3):
     return group
 
 
-
-
-
-
 def quasicrystal(width, height, N=256, group=None, f=None, p=None, n=None):
     """
     # Quasicrystal Pattern Generator
@@ -129,25 +126,33 @@ def quasicrystal(width, height, N=256, group=None, f=None, p=None, n=None):
 
     if group is None:
         group = displayio.Group()
-    elif group:
-        group.pop()
+#    elif group:
+#        group.pop()
 
-    pixels = displayio.Bitmap(width, height, 256)
+    pixels = displayio.Bitmap(width, height, N)
     palette = displayio.Palette(N)
 
+    # blue to yellow
     for i in range(N):
-        j = 128+int(i*(128/N))
-        palette[i]=j*2**16+j*2**8+j
-    palette[0] = 0
+        j = int((i/N)*255)
+        palette[i]=j*2**16+j*2**8+128-j//2
+    palette[0] = 0x000088
+
+    # grayscale
+    #for i in range(N):
+        #j = 128+int(i*(128/N))
+    #    j = int((i/N)*255)
+    #    palette[i]=j*2**16+j*2**8+j
+    #palette[0] = 0
 
     tile_grid = displayio.TileGrid(pixels, pixel_shader=palette)
-    group.append(tile_grid)
+#    group.append(tile_grid)
     if f is None:
-        f = random.random() * 45 + 5 # frequency
+        f = random.random() * 27 + 8 # frequency
     if p is None:
         p = random.random() * math.pi # phase
     if n is None:
-        n = random.randint(5, 20) # of rotations
+        n = random.randint(7, 15) # of rotations
     # intermediary calculus
     fp = f + p
     rot = 3.14 * 2.0 / n
@@ -155,23 +160,21 @@ def quasicrystal(width, height, N=256, group=None, f=None, p=None, n=None):
     h4pi = 12.56 / (height - 1)
     w4pi = 12.56 / (width - 1)
     row = ulab.array([i for i in range(width)])
-    row = row * w4pi
-    row = row - 6.28
+    row = (row * w4pi) - 6.28
     for ky in range(height):
-        s_cal = time.monotonic()
         y = ky * h4pi - 6.28
         y2 = y**2
-        atan = ulab.array([math.atan2(y, row[i]) for i in range(width)])
-        dist = row * row
-        dist = dist + y2
-        dist = ulab.vector.sqrt(dist)
-        dist = dist * fp
-        z = ulab.array(ulab.zeros(width))
+        atan = ulab.vector.atan( row / y )
+        dist = ulab.vector.sqrt((row * row) + y2) * fp
+        #dist = dist * fp
+        z = ulab.zeros(width)
         for i in range(n):
-            a = atan + (i * rot)
-            a = ulab.vector.sin(a) * dist
-            z = z + ulab.vector.cos(a)
-        z = z * Nn
+            z = z + ulab.vector.cos(ulab.vector.sin(atan + (i * rot)) * dist)
+        z = abs(z * Nn)
         for i, c in enumerate(z):
-            pixels[i, ky] = int(c)
+            pixels[ky*width+i] = int(c)
+    if group:
+        group.pop()
+    group.append(tile_grid)
+    gc.collect()
     return group

@@ -17,4 +17,4 @@ while True:
     group = fractals.mandelbrot(display.width, display.height, 255, group, rand_point[0], rand_point[1])
     # 5 minutes pause.
     time.sleep(300)
-    pass
+
